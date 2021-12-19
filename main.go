@@ -1,25 +1,30 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	"time"
 	"work/grette_back/database"
+	"work/grette_back/routers"
 )
-
-type User struct {
-	Id          int    `gorm:"primaryKey;autoIncrement;index;not null;column:id"`
-	Name        string `gorm:"column:name"`
-	Email       string `gorm:"column:email"`
-	Password    string `gorm:"column:password"`
-	CompanyName string `gorm:"column:companyName"`
-}
 
 func main() {
 
 	db, err := database.Setup()
 
-	var user User
-	aa := db.Select("email").Where(User{Email: "baekhk1006@gmail.com"}).First(&user)
-
-	_ = aa
+	/*
+		var user User
+		aa := db.Select("email").Where(User{Email: "baekhk1006@gmail.com"}).First(&user)
+		_ = aa
+	*/
 	_ = db
 	_ = err
+	server := &http.Server{
+		Addr:    ":8090",
+		Handler: routers.InitRouter(),
+	}
+
+	log.Print(`[START] Grette START `, time.Now())
+
+	server.ListenAndServe()
 }
