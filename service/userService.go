@@ -1,10 +1,11 @@
 package service
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+	"work/grette_back/database/entities"
 	"work/grette_back/model"
+	"work/grette_back/repositories"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,6 +22,15 @@ func SendEmail(c *gin.Context) {
 func CheckCode(c *gin.Context) {
 	code := c.Query("code")
 
+	if len(code) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    403,
+			"message": "code 공백",
+		})
+
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "인증번호 체크",
 		"id":      code,
@@ -28,8 +38,64 @@ func CheckCode(c *gin.Context) {
 }
 
 func CheckNickName(c *gin.Context) {
+	nickName := c.Query("nickName")
+
+	if len(nickName) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    403,
+			"message": "code 공백",
+		})
+
+		return
+	}
+
+	result, err := repositories.ExistsNickName(nickName)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    403,
+			"message": "로그인 오류",
+		})
+
+		log.Print(err.Error())
+
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "닉네임 체크",
+		"닉네임 개수":  result,
+	})
+}
+
+func CheckEmail(c *gin.Context) {
+	email := c.Query("email")
+
+	if len(email) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    403,
+			"message": "code 공백",
+		})
+
+		return
+	}
+
+	result, err := repositories.ExistsNickName(email)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    403,
+			"message": "로그인 오류",
+		})
+
+		log.Print(err.Error())
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "닉네임 체크",
+		"이메일 개수":  result,
 	})
 }
 
@@ -54,18 +120,55 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("User :: ", user)
+	paramUser := new(entities.User)
+
+	paramUser.Email = user.Email
+	paramUser.NickName = user.NickName
+	paramUser.Password = user.Password
+	paramUser.CompanyName = user.Company
+
+	result, err := repositories.SetUserRegister(*paramUser)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    403,
+			"message": "회원가입 에러",
+			"result":  result,
+		})
+
+		log.Print(err.Error())
+
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"Content-type": "application/json",
 		"message":      "회원가입",
-		"아이디":          user,
+		"이메일":          user.Email,
+		"result":       result,
 	})
 }
 
 func GetUser(c *gin.Context) {
+
+	id := c.Query("id")
+
+	user, err := repositories.GetUser(id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    403,
+			"message": "유저정보 조회 오류",
+		})
+
+		log.Print(err.Error())
+
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "유저정보 조회",
+		"유저 정보":   user,
 	})
 }
 
@@ -78,13 +181,45 @@ func DeleteUser(c *gin.Context) {
 func UpdateUser(c *gin.Context) {
 
 	user := new(model.User)
-	fmt.Println("User1 :: ", user)
+
 	c.BindJSON(&user)
-	fmt.Println("User2 :: ", user.Email)
-	fmt.Println("User2 :: ", user.Company)
-	fmt.Println("User2 :: ", user.Password)
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "비밀번호 변경 및 닉네임 변경",
 		"유저정보":    user,
+	})
+}
+
+func DoLogin(c *gin.Context) {
+
+	user := new(model.User)
+
+	c.BindJSON(&user)
+
+	if len(user.Email) == 0 || len(user.Password) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    403,
+			"message": "파라미터를 확인하세요",
+		})
+
+		return
+	}
+
+	result, err := repositories.ExistsPassword(user.Email, user.Password)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    403,
+			"message": "로그인 오류",
+		})
+
+		log.Print(err.Error())
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":   "비밀번호 변경 및 닉네임 변경",
+		"로그인 성공 여부": result,
 	})
 }

@@ -24,7 +24,7 @@ func main() {
 		Handler: routers.InitRouter(),
 	}
 
-	log.Print(`[START] Grette START `, time.Now())
+	log.Print(`[START] Grette SERVER START `, time.Now())
 
 	server.ListenAndServe()
 }
