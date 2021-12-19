@@ -11,8 +11,6 @@ import (
 
 var DbConnector *gorm.DB
 
-var UserTable string
-
 func Setup() (*gorm.DB, error) {
 	log.Printf("start gorm connection")
 	var err error = nil
@@ -27,8 +25,6 @@ func Setup() (*gorm.DB, error) {
 	rootID := os.Getenv("DB_ID")
 	rootPW := os.Getenv("DB_PW")
 	dbAddr := os.Getenv("DB_ADDR")
-
-	UserTable := os.Getenv("USER_TABLE")
 
 	dsn := rootID + ":" + rootPW + "@tcp(" + dbAddr + ")/" + dbName + "?charset=utf8&parseTime=True&loc=Local"
 
