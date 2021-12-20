@@ -1,30 +1,29 @@
 package main
 
 import (
-	"log"
-	"net/http"
-	"time"
 	"work/grette_back/database"
-	"work/grette_back/routers"
+	"work/grette_back/repositories"
+	"work/grette_back/setting"
 )
+
+func init() {
+
+	setting.Setup()
+	database.Setup()
+}
 
 func main() {
 
-	db, err := database.Setup()
-
-	/*
-		var user User
-		aa := db.Select("email").Where(User{Email: "baekhk1006@gmail.com"}).First(&user)
-		_ = aa
-	*/
-	_ = db
+	com, err := repositories.GetCompanyList()
+	_ = com
 	_ = err
-	server := &http.Server{
-		Addr:    ":8090",
-		Handler: routers.InitRouter(),
-	}
 
-	log.Print(`[START] Grette START `, time.Now())
+	// server := &http.Server{
+	// 	Addr:    "http://localhost:8090/user/checkNickName",
+	// 	Handler: routers.InitRouter(),
+	// }
 
-	server.ListenAndServe()
+	// log.Print(`[START] Grette START `, time.Now())
+
+	// server.ListenAndServe()
 }

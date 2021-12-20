@@ -13,7 +13,7 @@ func GetUser(email string) (entities.User, error) {
 	var user entities.User
 
 	//db.Where(&entities.User{Email: email}).First(&user)
-	database.DbConnector.Table(UserTable).Where(&entities.User{Email: email}).Scan(&user)
+	database.Db.Table(UserTable).Where(&entities.User{Email: email}).Scan(&user)
 
 	return user, nil
 }
@@ -23,7 +23,7 @@ func GetUser(email string) (entities.User, error) {
 func ExistsPassword(email string, password string) (int, error) {
 	var user entities.User
 
-	result := database.DbConnector.Table(UserTable).Where(&entities.User{Email: email, Password: password}).First(&user)
+	result := database.Db.Table(UserTable).Where(&entities.User{Email: email, Password: password}).First(&user)
 
 	var existsCount int64
 	result.Count(&existsCount)
