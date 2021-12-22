@@ -9,6 +9,10 @@ import (
 	"gorm.io/gorm"
 )
 
+var DbConnector *gorm.DB
+
+var UserTable string
+
 func Setup() (*gorm.DB, error) {
 	log.Printf("start gorm connection")
 	var err error = nil
@@ -24,9 +28,11 @@ func Setup() (*gorm.DB, error) {
 	rootPW := os.Getenv("DB_PW")
 	dbAddr := os.Getenv("DB_ADDR")
 
+	UserTable := os.Getenv("USER_TABLE")
+
 	dsn := rootID + ":" + rootPW + "@tcp(" + dbAddr + ")/" + dbName + "?charset=utf8&parseTime=True&loc=Local"
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DbConnector, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		log.Printf("database connection failed")
@@ -35,5 +41,5 @@ func Setup() (*gorm.DB, error) {
 
 	log.Printf("database connection success")
 
-	return db, err
+	return DbConnector, err
 }
