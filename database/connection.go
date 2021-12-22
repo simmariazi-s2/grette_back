@@ -2,37 +2,19 @@ package database
 
 import (
 	"log"
-	"os"
+	"work/grette_back/setting"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-var DbConnector *gorm.DB
-
-var UserTable string
+var Db *gorm.DB
 
 func Setup() (*gorm.DB, error) {
 	log.Printf("start gorm connection")
 	var err error = nil
-	envErr := godotenv.Load(".env")
 
-	if envErr != nil {
-		log.Printf(".env file Load Failed")
-		return nil, envErr
-	}
-
-	dbName := os.Getenv("DB_NAME")
-	rootID := os.Getenv("DB_ID")
-	rootPW := os.Getenv("DB_PW")
-	dbAddr := os.Getenv("DB_ADDR")
-
-	UserTable := os.Getenv("USER_TABLE")
-
-	dsn := rootID + ":" + rootPW + "@tcp(" + dbAddr + ")/" + dbName + "?charset=utf8&parseTime=True&loc=Local"
-
-	DbConnector, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	Db, err = gorm.Open(mysql.Open(setting.DatabaseSetting.ConnectionString), &gorm.Config{})
 
 	if err != nil {
 		log.Printf("database connection failed")
@@ -41,5 +23,5 @@ func Setup() (*gorm.DB, error) {
 
 	log.Printf("database connection success")
 
-	return DbConnector, err
+	return Db, err
 }

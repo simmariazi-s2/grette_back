@@ -23,7 +23,7 @@ func GetUser(email string) (entities.User, error) {
 func ExistsPassword(email string, password string) (int, error) {
 	var user entities.User
 
-	result := database.Db.Table(UserTable).Where(&entities.User{Email: email, Password: password}).First(&user)
+	result := database.Db.Table("user").Where(&entities.User{Email: email, Password: password}).First(&user)
 
 	var existsCount int64
 	result.Count(&existsCount)

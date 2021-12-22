@@ -19,7 +19,7 @@ func ExistsUserEmail(email string) (int, error) {
 
 	// 입력한 이메일에 해당하는 레코드 조회
 	//result = database.DbConnector.Where(&entities.User{Email: email}).First(&user)
-	result := database.DbConnector.Table(UserTable).Where(&entities.User{Email: email}).First(&user)
+	result := database.Db.Table(UserTable).Where(&entities.User{Email: email}).First(&user)
 
 	var existsCount int64
 	result.Count(&existsCount)
@@ -37,7 +37,7 @@ func ExistsUserEmail(email string) (int, error) {
 func ExistsNickName(nickName string) (int, error) {
 	var user entities.User
 
-	result := database.DbConnector.Table(UserTable).Where(&entities.User{NickName: nickName}).Scan(&user)
+	result := database.Db.Table("user").Where(&entities.User{NickName: nickName}).Scan(&user)
 
 	var existsCount int64
 	result.Count(&existsCount)
@@ -49,7 +49,7 @@ func ExistsNickName(nickName string) (int, error) {
 func GetCompanyList() (map[int]entities.Company, error) {
 	var companyList map[int]entities.Company
 
-	database.DbConnector.Table(CompanyTable).Scan(&companyList)
+	database.Db.Table("company").Scan(&companyList)
 
 	if len(companyList) == 0 {
 		return nil, errors.New("Company is empty")
@@ -61,7 +61,7 @@ func GetCompanyList() (map[int]entities.Company, error) {
 // 입력된 회원정보 저장
 func SetUserRegister(user entities.User) (bool, error) {
 
-	result := database.DbConnector.Create(&user)
+	result := database.Db.Create(&user)
 
 	if result.Error != nil {
 		return false, result.Error
