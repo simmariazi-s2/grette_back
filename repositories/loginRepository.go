@@ -13,7 +13,7 @@ func GetUser(email string) (entities.User, error) {
 	var user entities.User
 
 	//db.Where(&entities.User{Email: email}).First(&user)
-	database.Db.Table(UserTable).Where(&entities.User{Email: email}).Scan(&user)
+	database.Db.Table("user").Where(&entities.User{Email: email}).Scan(&user)
 
 	return user, nil
 }
