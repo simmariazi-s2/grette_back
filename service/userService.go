@@ -3,7 +3,9 @@ package service
 import (
 	"log"
 	"net/http"
+	"work/grette_back/app"
 	"work/grette_back/database/entities"
+	"work/grette_back/message"
 	"work/grette_back/model"
 	"work/grette_back/repositories"
 
@@ -27,7 +29,6 @@ func CheckCode(c *gin.Context) {
 			"code":    403,
 			"message": "code 공백",
 		})
-
 		return
 	}
 
@@ -38,65 +39,35 @@ func CheckCode(c *gin.Context) {
 }
 
 func CheckNickName(c *gin.Context) {
+
+	gin := app.Gin{C: c}
+
 	nickName := c.Query("nickName")
-
-	if len(nickName) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    403,
-			"message": "code 공백",
-		})
-
-		return
-	}
 
 	result, err := repositories.ExistsNickName(nickName)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    403,
-			"message": "로그인 오류",
-		})
-
 		log.Print(err.Error())
-
+		gin.Response(http.StatusBadRequest, message.INVALID_PARAMS, result)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "닉네임 체크",
-		"닉네임 개수":  result,
-	})
+	gin.Response(http.StatusOK, message.SUCCESS, result)
 }
 
 func CheckEmail(c *gin.Context) {
+
+	gin := app.Gin{C: c}
+
 	email := c.Query("email")
-
-	if len(email) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    403,
-			"message": "code 공백",
-		})
-
-		return
-	}
-
-	result, err := repositories.ExistsNickName(email)
+	result, err := repositories.ExistsUserEmail(email)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    403,
-			"message": "로그인 오류",
-		})
-
-		log.Print(err.Error())
-
+		gin.Response(http.StatusBadRequest, message.INVALID_PARAMS, result)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "닉네임 체크",
-		"이메일 개수":  result,
-	})
+	gin.Response(http.StatusOK, message.SUCCESS, result)
 }
 
 func CheckUser(c *gin.Context) {
