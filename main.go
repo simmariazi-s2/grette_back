@@ -52,11 +52,5 @@ func main() {
 	fmt.Println("dbAddr ::: ", dbAddr)
 
 	fmt.Println("db 테스트 진행중 : ", repositories.DbTest())
-	var a us
-
-	//database.Db.Raw("SELECT * FROM user").Scan(&a)
-	database.Db.Select(&a)
-
-	fmt.Println(a.companyNo)
 
 }

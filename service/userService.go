@@ -93,10 +93,10 @@ func RegisterUser(c *gin.Context) {
 
 	paramUser := new(entities.User)
 
-	paramUser.Email = user.Email
-	paramUser.NickName = user.NickName
-	paramUser.Password = user.Password
-	paramUser.CompanyName = user.Company
+	//paramUser.Email = user.Email
+	//paramUser.NickName = user.NickName
+	//paramUser.Password = user.Password
+	//paramUser.CompanyName = user.Company
 
 	result, err := repositories.SetUserRegister(*paramUser)
 
