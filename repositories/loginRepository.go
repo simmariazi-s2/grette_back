@@ -48,7 +48,7 @@ func ExistsPassword(email string, password string) (int, error) {
 func DbTest() string {
 	var a string
 	var cate Category
-	var c user
+	var c entities.User
 	var d user
 	//result := database.Db.Table("company")
 	//database.Db.Take(&cate)
@@ -65,10 +65,10 @@ func DbTest() string {
 	//fmt.Println("aa :: ", result.Count(&existsCount))
 	a = cate.categoryName + "" + strconv.Itoa(cate.categoryNo)
 	//result := database.Db.Table("category").Scan(a)
-	c.uid = "22"
-	c.userName = "33"
-	c.userId = ""
-	c.userNm = ""
+	// c.uid = "22"
+	// c.userName = "33"
+	// c.userId = ""
+	// c.userNm = ""
 
 	//database.Db.Create(c)
 	database.Db.Save(&c)

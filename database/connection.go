@@ -2,10 +2,12 @@ package database
 
 import (
 	"log"
+	"work/grette_back/database/entities"
 	"work/grette_back/setting"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 var Db *gorm.DB
@@ -17,7 +19,13 @@ func Setup() (*gorm.DB, error) {
 	//db, err := gorm.Open(mysql.Open(setting.DatabaseSetting.ConnectionString), &gorm.Config{})
 	//	db, err := gorm.Open("mysql", mysql.Open(setting.DatabaseSetting.ConnectionString))
 
-	Db, err = gorm.Open(mysql.Open(setting.DatabaseSetting.ConnectionString), &gorm.Config{})
+	Db, err = gorm.Open(mysql.Open(setting.DatabaseSetting.ConnectionString), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		},
+	})
+
+	err = Db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&entities.User{}, &entities.Board{}, &entities.Company{})
 
 	if err != nil {
 		log.Printf("database connection failed err :: ", err)
