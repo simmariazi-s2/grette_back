@@ -1,12 +1,26 @@
 package repositories
 
 import (
+	"fmt"
+	"strconv"
 	"work/grette_back/database"
 	"work/grette_back/database/entities"
 )
 
 var UserTable string = "user"
 var CompanyTable string = "Company"
+
+type Category struct {
+	categoryNo   int    `gorm:"primaryKey;autoIncrement;index;not null;column:categoryNo"`
+	categoryName string `gorm:"column:categoryName"`
+}
+
+type user struct {
+	uid      string `gorm:"userId"`
+	userName string `gorm:"userName"`
+	userId   string `gorm:"default:lemon"`
+	userNm   string `gorm:"default:red"`
+}
 
 // 이메일로 등록된 유저정보 반환
 func GetUser(email string) (entities.User, error) {
@@ -29,4 +43,42 @@ func ExistsPassword(email string, password string) (int, error) {
 	result.Count(&existsCount)
 
 	return int(existsCount), nil
+}
+
+func DbTest() string {
+	var a string
+	var cate Category
+	var c user
+	var d user
+	//result := database.Db.Table("company")
+	//database.Db.Take(&cate)
+	//result := database.Db.Table("category").Select("categoryNo", "categoryName").Where("categoryName=?", "테스트").Scan(&cate)
+	//database.Db.AutoMigrate()
+	//database.Db.First(&cate)
+	//if err != nil && err != gorm.ErrRecordNotFound {
+	//	return ""
+	//}
+
+	database.Db.Raw("SELECT categoryNo, categoryName FROM category").Scan(cate)
+
+	fmt.Println("aa :: ", cate.categoryNo)
+	//fmt.Println("aa :: ", result.Count(&existsCount))
+	a = cate.categoryName + "" + strconv.Itoa(cate.categoryNo)
+	//result := database.Db.Table("category").Scan(a)
+	c.uid = "22"
+	c.userName = "33"
+	c.userId = ""
+	c.userNm = ""
+
+	//database.Db.Create(c)
+	database.Db.Save(&c)
+	//database.Db.Delete(&c)
+	gg, _ := database.Setup()
+	gg.Create(&c)
+	database.Db.Create(&c)
+	database.Db.First(d.userId)
+
+	fmt.Println("cc :: ", c)
+	fmt.Println("dd :: ", d)
+	return a
 }
