@@ -33,9 +33,10 @@ func GetUser(email string) (entities.User, error) {
 // 비밀번호 체크
 // 동일 비밀번호가 있을 수 있으니, 이메일과 비밀번호로 체크
 func ExistsPassword(email string, password string) (int, error) {
-	//var user entities.User
-
-	//result := database.Db.Table("user").Where(&entities.User{Email: email, Password: password}).First(&user)
+	var user entities.User
+	var userPassword string
+	//result := database.Db.Table("user").Where(&entities.User{Em=ail: email, Password: password}).First(&user)
+	database.Db.Model(&user).Select("userPassword").Where("userId=?", email).Scan(&userPassword)
 
 	var existsCount int64 = 1
 	//result.Count(&existsCount)
@@ -50,6 +51,7 @@ func DbTest() string {
 	var b Users
 	var d Test
 	var iUser entities.User
+
 	//var cmp entities.Company
 
 	//result := database.Db.Table("company")
@@ -74,13 +76,22 @@ func DbTest() string {
 	fmt.Println(b)
 	fmt.Println(d)
 
+	r := database.Db.Where("userId=?", "테스트1").Find(&user)
+	fmt.Println("이야호 :: ", r.RowsAffected)
 	database.Db.Raw("select * from category").Scan(&cate)
-	fmt.Println(cate)
+	fmt.Println(cate, " ::::::  ", len(cate))
 	email := "테스트1"
 	database.Db.Where("userId=?", email).Find(&user).Scan(&user)
 	fmt.Println("@", user)
+
+	database.Db.Model(&user).Where("userId=?", email).Update("userPassword", "비밀번호")
 	database.Db.Model(&user).Where("userId=?", email).Scan(&user)
-	fmt.Println("!", user)
+	result := map[string]interface{}{}
+
+	database.Db.Model(&user).Select("userPassword").Where("userId=?", email).Scan(&a)
+	fmt.Println("! 2", user)
+	fmt.Println("! 3", result)
+	fmt.Println("! 4", a)
 
 	//iUser.UserNo =
 	iUser.CompanyNo = 11
@@ -92,10 +103,10 @@ func DbTest() string {
 	//	DoUpdates: clause.AssignmentColumns([]string{"companyNo", "userId", "updateDtm"}),
 	//}).Create(&iUser)
 
-	database.Db.Create(&iUser)
+	//database.Db.Create(&iUser)
 
 	//database.Db.Save(&iUser)
-	fmt.Println(iUser.UserNickname)
+	//fmt.Println(iUser.UserNickname)
 
 	//cmp.Domain = "test"
 	//cmp.CompanyName = "한글"
