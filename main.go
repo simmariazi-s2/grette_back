@@ -7,6 +7,7 @@ import (
 	"work/grette_back/database"
 	"work/grette_back/repositories"
 	"work/grette_back/setting"
+	"work/grette_back/util"
 
 	"github.com/joho/godotenv"
 	_ "gorm.io/gorm"
@@ -52,5 +53,20 @@ func main() {
 	fmt.Println("dbAddr ::: ", dbAddr)
 
 	fmt.Println("db 테스트 진행중 : ", repositories.DbTest())
+
+	e, _ := util.EncodeScrypt("1이거!")
+	fmt.Println("암호화 테스트 :: ", e)
+	d := util.CompareHashAndPassword(e, "1이거!")
+	fmt.Println("패스워트 검증 테스트 :: ", d)
+
+	var a string
+
+	fmt.Println("a 비교 :: ", &a)
+	fmt.Println("a 비교 :: ", &a == nil)
+	fmt.Println("a 비교 :: ", a == "")
+
+	a = ""
+
+	fmt.Println("a 비교 :: ", a == "")
 
 }

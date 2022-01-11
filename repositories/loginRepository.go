@@ -19,31 +19,6 @@ type Test struct {
 	categoryNo int
 }
 
-// 이메일로 등록된 유저정보 반환
-func GetUser(email string) (entities.User, error) {
-	var user entities.User
-
-	//db.Where(&entities.User{Email: email}).First(&user)
-	//database.Db.Table("user").Where(&entities.User{Email: email}).Scan(&user)
-	database.Db.Model(&user).Where("userId=?", email).Scan(&user)
-
-	return user, nil
-}
-
-// 비밀번호 체크
-// 동일 비밀번호가 있을 수 있으니, 이메일과 비밀번호로 체크
-func ExistsPassword(email string, password string) (int, error) {
-	var user entities.User
-	var userPassword string
-	//result := database.Db.Table("user").Where(&entities.User{Em=ail: email, Password: password}).First(&user)
-	database.Db.Model(&user).Select("userPassword").Where("userId=?", email).Scan(&userPassword)
-
-	var existsCount int64 = 1
-	//result.Count(&existsCount)
-
-	return int(existsCount), nil
-}
-
 func DbTest() string {
 	var a string
 	var cate []entities.Category
@@ -120,6 +95,11 @@ func DbTest() string {
 	// c.userName = "33"
 	// c.userId = ""
 	// c.userNm = ""
+
+	database.Db.Model(&user).Scan(&user)
+
+	fmt.Println("유저 정보 리스트 :: ", user[0])
+	fmt.Println("유저 정보 리스트 :: ", user[1])
 
 	return a
 }
