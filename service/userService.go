@@ -98,7 +98,7 @@ func RegisterUser(c *gin.Context) {
 	//paramUser.Password = user.Password
 	//paramUser.CompanyName = user.Company
 
-	result, err := repositories.SetUserRegister(*paramUser)
+	result, err := repositories.CreateUser(*paramUser)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
