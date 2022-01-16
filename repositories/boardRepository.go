@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"fmt"
 	"work/grette_back/database"
 	"work/grette_back/database/entities"
 
@@ -100,9 +101,9 @@ func UpdateReply(reply entities.Reply) (int, error) {
 func SetRecommand(rec *entities.Recommand) (int, error) {
 	var result *gorm.DB
 	var reRec entities.Recommand
-	//reRec = database.Db.Model(&rec).Where("recNo=? AND likeType=?", rec.RecNo, rec.LikeType).Find(&entities.Recommand{})
-	result = database.Db.Model(&rec).Where("userNo=? AND boardNo=? AND replyNo=?", rec.RecNo, rec.UserNo, rec.BoardNo, rec.ReplyNo).Scan(&reRec)
 
+	result = database.Db.Model(&rec).Where("userNo=? AND boardNo=? AND replyNo=?", rec.UserNo, rec.BoardNo, rec.ReplyNo).Scan(&reRec)
+	fmt.Println("rec.LikeType  :: ", rec.LikeType, ", reRec.LikeType ::: ", reRec.LikeType)
 	if rec.LikeType == reRec.LikeType {
 		result = database.Db.Delete(&rec)
 	} else {

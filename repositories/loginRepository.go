@@ -130,28 +130,9 @@ func DbTest() string {
 	fmt.Println(recommand.RecNo == 0)
 	fmt.Println(recommand.RecNo)
 
-	var reRec entities.Recommand
+	x, errr := SetRecommand(&recommand)
 
-	database.Db.Model(&recommand).Where("userNo=? AND boardNo=? AND replyNo=?", recommand.RecNo, recommand.UserNo, recommand.BoardNo, recommand.ReplyNo).Scan(&reRec)
-
-	if recommand.LikeType == reRec.LikeType {
-		database.Db.Delete(&recommand)
-	} else {
-		database.Db.Save(&recommand)
-	}
-
-	if recommand.RecNo == 0 {
-		database.Db.Model(&recommand).Where("userNo=? AND boardNo=? AND replyNo=?", recommand.RecNo, recommand.UserNo, recommand.BoardNo, recommand.ReplyNo).Scan(&reRec)
-
-	} else {
-		database.Db.Model(&recommand).Where("recNo=? AND userNo=? AND boardNo=? AND replyNo=?", recommand.RecNo, recommand.UserNo, recommand.BoardNo, recommand.ReplyNo).Scan(&reRec)
-	}
-
-	fmt.Println("우하하 ", recommand)
-
-	//x, errr := SetRecommand(&recommand)
-
-	//fmt.Println("좋아요 셋팅 :  ", x, errr)
+	fmt.Println("좋아요 셋팅 :  ", x, errr)
 
 	return a
 }
