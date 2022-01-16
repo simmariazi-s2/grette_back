@@ -103,11 +103,11 @@ func DbTest() string {
 
 	var recommand entities.Recommand
 
-	//recommand.RecNo = 10
+	recommand.RecNo = 13
 	recommand.LikeType = 0
 	recommand.SetReplyNo(10)
 	recommand.SetBoardNo(10)
-	recommand.SetUserNo(10)
+	recommand.SetUserNo(11)
 
 	//recommand.ReplyNo = 5
 	//recommand.UserNo = 3
@@ -130,7 +130,7 @@ func DbTest() string {
 	fmt.Println(recommand.RecNo == 0)
 	fmt.Println(recommand.RecNo)
 
-	x, errr := SetRecommand(&recommand)
+	x, errr := SetRecommand(recommand)
 
 	fmt.Println("좋아요 셋팅 :  ", x, errr)
 

@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"errors"
-	"fmt"
 	"work/grette_back/database"
 	"work/grette_back/database/entities"
 
@@ -98,16 +97,27 @@ func UpdateReply(reply entities.Reply) (int, error) {
 	likeType 0 : 싫어요 , 1 : 좋아요
 	Recommand : 좋아요 리스트
 */
-func SetRecommand(rec *entities.Recommand) (int, error) {
+func SetRecommand(rec entities.Recommand) (int, error) {
 	var result *gorm.DB
 	var reRec entities.Recommand
 
 	result = database.Db.Model(&rec).Where("userNo=? AND boardNo=? AND replyNo=?", rec.UserNo, rec.BoardNo, rec.ReplyNo).Scan(&reRec)
-	fmt.Println("rec.LikeType  :: ", rec.LikeType, ", reRec.LikeType ::: ", reRec.LikeType)
-	if rec.LikeType == reRec.LikeType {
-		result = database.Db.Delete(&rec)
+
+	if rec.RecNo != 0 {
+		if rec.LikeType == reRec.LikeType {
+			result = database.Db.Delete(&rec)
+		} else {
+			if result.RowsAffected > 0 {
+				result = database.Db.Model(&rec).Where("recNo=?", rec.RecNo).Update("likeType", rec.LikeType)
+			} else {
+				result = database.Db.Create(&rec)
+			}
+		}
 	} else {
-		result = database.Db.Save(&rec)
+		if result.RowsAffected > 0 {
+			return 0, errors.New("좋아요/싫어요 오류 :: RecNo 값을 확인하세요.")
+		}
+		result = database.Db.Create(&rec)
 	}
 
 	return int(result.RowsAffected), result.Error
