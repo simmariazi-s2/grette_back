@@ -101,5 +101,57 @@ func DbTest() string {
 	fmt.Println("유저 정보 리스트 :: ", user[0])
 	fmt.Println("유저 정보 리스트 :: ", user[1])
 
+	var recommand entities.Recommand
+
+	//recommand.RecNo = 10
+	recommand.LikeType = 0
+	recommand.SetReplyNo(10)
+	recommand.SetBoardNo(10)
+	recommand.SetUserNo(10)
+
+	//recommand.ReplyNo = 5
+	//recommand.UserNo = 3
+	//recommand.BoardNo = 5
+
+	//	rr := database.Db.Save(&recommand)
+	//rr := database.Db.Updates(&recommand)
+	//rr := database.Db.Model(&recommand).Where("likeType", 0).Scan(&recommand)
+
+	//fmt.Println("좋아요 등록 : ", int(rr.RowsAffected), recommand)
+
+	var recommandList []entities.Recommand
+	ab := database.Db.Model(&recommandList).Where("likeType", recommand.LikeType).Find(&[]entities.Recommand{})
+	fmt.Println("이거머야 :: ", int(ab.RowsAffected), recommandList)
+	database.Db.Model(&recommandList).Where("likeType", 1).Order("recNo desc").Scan(&recommandList)
+	fmt.Println("좋아요 리스트 ::: ", recommandList)
+
+	//database.Db.Model(&recommand).Find(&recommand)
+
+	fmt.Println(recommand.RecNo == 0)
+	fmt.Println(recommand.RecNo)
+
+	var reRec entities.Recommand
+
+	database.Db.Model(&recommand).Where("userNo=? AND boardNo=? AND replyNo=?", recommand.RecNo, recommand.UserNo, recommand.BoardNo, recommand.ReplyNo).Scan(&reRec)
+
+	if recommand.LikeType == reRec.LikeType {
+		database.Db.Delete(&recommand)
+	} else {
+		database.Db.Save(&recommand)
+	}
+
+	if recommand.RecNo == 0 {
+		database.Db.Model(&recommand).Where("userNo=? AND boardNo=? AND replyNo=?", recommand.RecNo, recommand.UserNo, recommand.BoardNo, recommand.ReplyNo).Scan(&reRec)
+
+	} else {
+		database.Db.Model(&recommand).Where("recNo=? AND userNo=? AND boardNo=? AND replyNo=?", recommand.RecNo, recommand.UserNo, recommand.BoardNo, recommand.ReplyNo).Scan(&reRec)
+	}
+
+	fmt.Println("우하하 ", recommand)
+
+	//x, errr := SetRecommand(&recommand)
+
+	//fmt.Println("좋아요 셋팅 :  ", x, errr)
+
 	return a
 }

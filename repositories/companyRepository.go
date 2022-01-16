@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"errors"
 	"work/grette_back/database"
 	"work/grette_back/database/entities"
 )
@@ -10,13 +9,14 @@ import (
 func GetCompanyList() ([]entities.Company, error) {
 	var companyList []entities.Company
 
-	database.Db.Model(&companyList).Scan(&companyList)
+	result := database.Db.Model(&companyList).Scan(&companyList)
+	/*
+		if result != nil {
+			return nil, result.Error
+		}
+	*/
 
-	if len(companyList) == 0 {
-		return nil, errors.New("Company is empty")
-	}
-
-	return companyList, nil
+	return companyList, result.Error
 }
 
 // 회사 등록

@@ -80,7 +80,7 @@ func ExistsUserEmail(email string) (int, error) {
 	회원가입
 	int : 0 실패, 1 성공
 */
-func SetUser(user entities.User) (int, error) {
+func CreateUser(user entities.User) (int, error) {
 
 	if &user == nil {
 		return 0, errors.New("회원가입 오류 : User 정보가 비어있습니다. ")
@@ -89,4 +89,20 @@ func SetUser(user entities.User) (int, error) {
 	result := database.Db.Create(&user)
 
 	return int(result.RowsAffected), result.Error
+}
+
+/*
+	회원정보수정
+	int : 0 실패, 1 성공
+*/
+func UpdateUser(user entities.User) (int, error) {
+
+	if &user == nil {
+		return 0, errors.New("회원정보 수정 오류 : User 정보가 비어있습니다. ")
+	}
+
+	result := database.Db.Updates(&user)
+
+	return int(result.RowsAffected), result.Error
+
 }
