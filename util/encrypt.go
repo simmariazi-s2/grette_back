@@ -14,6 +14,7 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
+// 회원가입시 해당 함수 이용 비밀번호 암호화 처리
 func EncodeBase64(data string) string {
 	return base64.StdEncoding.EncodeToString([]byte(data))
 }
