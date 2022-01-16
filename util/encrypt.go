@@ -14,6 +14,8 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
+// 회원가입 시 비밀번호 암호화 처리 후 DB 저장
+// 안드로이드 암호화 -> 서비스 복호화 후 암호화 -> 데이터베이스 저장
 func EncodeBase64(data string) string {
 	return base64.StdEncoding.EncodeToString([]byte(data))
 }

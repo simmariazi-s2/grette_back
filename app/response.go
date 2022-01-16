@@ -13,7 +13,7 @@ type Gin struct {
 type Response struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
-	Data    interface{} `json:data`
+	Data    interface{} `json:"data"`
 }
 
 func (g *Gin) Response(httpCode, errCode int, data interface{}) {
