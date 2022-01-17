@@ -3,11 +3,13 @@ package service
 import (
 	"log"
 	"net/http"
+	"time"
 	"work/grette_back/app"
 	"work/grette_back/database/entities"
 	"work/grette_back/message"
 	"work/grette_back/model"
 	"work/grette_back/repositories"
+	"work/grette_back/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -78,6 +80,8 @@ func CheckUser(c *gin.Context) {
 
 func RegisterUser(c *gin.Context) {
 
+	gin := app.Gin{C: c}
+
 	user := new(model.User)
 
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -91,23 +95,23 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	paramUser := new(entities.User)
+	newUser := new(entities.User)
 
-	//paramUser.Email = user.Email
-	//paramUser.NickName = user.NickName
-	//paramUser.Password = user.Password
-	//paramUser.CompanyName = user.Company
+	newUser.UserNickname = user.NickName
+	newUser.CompanyNo = user.Company
+	newUser.CreateDtm = (*time.Time)(time.Now().UTC().Location())
 
-	result, err := repositories.CreateUser(*paramUser)
+	result, err := repositories.CreateUser(*newUser)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    403,
-			"message": "회원가입 에러",
-			"result":  result,
-		})
+		gin.Response(http.StatusBadRequest, message.CREATE_FAIL, user)
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"code":    403,
+		// 	"message": "회원가입 에러",
+		// 	"result":  result,
+		// })
 
-		log.Print(err.Error())
+		// log.Print(err.Error())
 
 		return
 	}
@@ -151,6 +155,8 @@ func DeleteUser(c *gin.Context) {
 
 func UpdateUser(c *gin.Context) {
 
+	gin := app.Gin{C: c}
+
 	user := new(model.User)
 
 	c.BindJSON(&user)
@@ -159,19 +165,47 @@ func UpdateUser(c *gin.Context) {
 		"message": "비밀번호 변경 및 닉네임 변경",
 		"유저정보":    user,
 	})
+
+	// if err != nil {
+	// 	log.Print(err.Error())
+	// 	gin.Response(http.StatusBadRequest, message.INVALID_PARAMS, result)
+	// 	return
+	// }
+
+	// gin.Response(http.StatusOK, message.SUCCESS, result)
+
+	userEntity := new(entities.User)
+	userEntity.UserNickname = user.NickName
+
+	//복호화 추가 필요
+	// 다시 인코딩
+	encodePassword := util.EncodeBase64(user.Password)
+	userEntity.UserPassword = encodePassword
+	userEntity.UpdateDtm = time.Now()
+	userEntity.CompanyNo = user.Company
+
+	result, err := repositories.UpdateUser(*userEntity)
+
+	if err != nil {
+		log.Print(err.Error())
+		gin.Response(http.StatusBadRequest, message.UPDATE_FAIL, result)
+		return
+	}
+
+	gin.Response(http.StatusOK, message.SUCCESS, result)
 }
 
 func DoLogin(c *gin.Context) {
+
+	gin := app.Gin{C: c}
 
 	user := new(model.User)
 
 	c.BindJSON(&user)
 
 	if len(user.Email) == 0 || len(user.Password) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    403,
-			"message": "파라미터를 확인하세요",
-		})
+
+		gin.Response(http.StatusBadRequest, message.ERROR, user)
 
 		return
 	}
@@ -189,8 +223,5 @@ func DoLogin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message":   "비밀번호 변경 및 닉네임 변경",
-		"로그인 성공 여부": result,
-	})
+	gin.Response(http.StatusOK, message.SUCCESS, result)
 }
