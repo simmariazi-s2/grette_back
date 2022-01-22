@@ -24,24 +24,19 @@ func SendEmail(c *gin.Context) {
 }
 
 func CheckCode(c *gin.Context) {
+	gin := app.Gin{C: c}
 	code := c.Query("code")
 
 	if len(code) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    403,
-			"message": "code 공백",
-		})
+
+		gin.Response(http.StatusBadRequest, message.INVALID_PARAMS, code)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "인증번호 체크",
-		"id":      code,
-	})
+	gin.Response(http.StatusOK, message.SUCCESS, code)
 }
 
 func CheckNickName(c *gin.Context) {
-
 	gin := app.Gin{C: c}
 
 	nickName := c.Query("nickName")
@@ -80,15 +75,18 @@ func CheckUser(c *gin.Context) {
 
 func RegisterUser(c *gin.Context) {
 
-	gin := app.Gin{C: c}
+	appGin := app.Gin{C: c}
 
 	user := new(model.User)
 
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    403,
-			"message": "유저정보를 확인하세요",
-		})
+
+		appGin.Response(http.StatusBadRequest, message.CREATE_FAIL, user)
+
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"code":    403,
+		// 	"message": "유저정보를 확인하세요",
+		// })
 
 		log.Print(err.Error())
 
@@ -104,7 +102,7 @@ func RegisterUser(c *gin.Context) {
 	result, err := repositories.CreateUser(*newUser)
 
 	if err != nil {
-		gin.Response(http.StatusBadRequest, message.CREATE_FAIL, user)
+		appGin.Response(http.StatusBadRequest, message.CREATE_FAIL, user)
 		// c.JSON(http.StatusBadRequest, gin.H{
 		// 	"code":    403,
 		// 	"message": "회원가입 에러",
@@ -116,35 +114,41 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"Content-type": "application/json",
-		"message":      "회원가입",
-		"이메일":          user.Email,
-		"result":       result,
-	})
+	appGin.Response(http.StatusOK, message.SUCCESS, result)
+
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"Content-type": "application/json",
+	// 	"message":      "회원가입",
+	// 	"이메일":          user.Email,
+	// 	"result":       result,
+	// })
 }
 
 func GetUser(c *gin.Context) {
-
+	appGin := app.Gin{C: c}
 	id := c.Query("id")
 
 	user, err := repositories.GetUser(id)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    403,
-			"message": "유저정보 조회 오류",
-		})
 
-		log.Print(err.Error())
+		appGin.Response(http.StatusBadRequest, message.ERROR, user)
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"code":    403,
+		// 	"message": "유저정보 조회 오류",
+		// })
 
-		return
+		// log.Print(err.Error())
+
+		// return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "유저정보 조회",
-		"유저 정보":   user,
-	})
+	appGin.Response(http.StatusOK, message.SUCCESS, user)
+
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"message": "유저정보 조회",
+	// 	"유저 정보":   user,
+	// })
 }
 
 func DeleteUser(c *gin.Context) {
@@ -159,12 +163,18 @@ func UpdateUser(c *gin.Context) {
 
 	user := new(model.User)
 
-	c.BindJSON(&user)
+	if err := c.ShouldBindJSON(&user); err != nil {
+		gin.Response(http.StatusBadRequest, message.INVALID_PARAMS, user)
+		log.Print(err.Error())
+		return
+	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "비밀번호 변경 및 닉네임 변경",
-		"유저정보":    user,
-	})
+	// c.BindJSON(&user)
+
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"message": "비밀번호 변경 및 닉네임 변경",
+	// 	"유저정보":    user,
+	// })
 
 	// if err != nil {
 	// 	log.Print(err.Error())
@@ -193,6 +203,7 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	gin.Response(http.StatusOK, message.SUCCESS, result)
+	log.Print("비밀번호 및 닉네임 변경 성공")
 }
 
 func DoLogin(c *gin.Context) {
@@ -200,27 +211,25 @@ func DoLogin(c *gin.Context) {
 
 	user := new(model.User)
 
-	c.BindJSON(&user)
+	//c.BindJSON(&user)
 
-	if len(user.Email) == 0 || len(user.Password) == 0 {
-
-		gin.Response(http.StatusBadRequest, message.ERROR, user)
-
+	// user정보 체크
+	if err := c.ShouldBindJSON(&user); err != nil {
+		gin.Response(http.StatusBadRequest, message.INVALID_PARAMS, user)
 		return
 	}
 
+	// user의 이메일/비밀번호 체크
+	if len(user.Email) == 0 || len(user.Password) == 0 {
+		gin.Response(http.StatusBadRequest, message.ERROR, user)
+		return
+	}
+
+	// 비밀번호 체크
 	result, err := repositories.ExistsPassword(user.Email, user.Password)
 
 	if err != nil {
-
 		gin.Response(http.StatusBadRequest, message.LOGIN_FAIL, result)
-		// c.JSON(http.StatusBadRequest, gin.H{
-		// 	"code":    403,
-		// 	"message": "로그인 오류",
-		// })
-
-		// log.Print(err.Error())
-
 		return
 	}
 
