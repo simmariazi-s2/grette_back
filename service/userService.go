@@ -9,7 +9,6 @@ import (
 	"work/grette_back/message"
 	"work/grette_back/model"
 	"work/grette_back/repositories"
-	"work/grette_back/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -73,12 +72,6 @@ func ExistsEmail(c *gin.Context) {
 	gin.Response(http.StatusOK, message.SUCCESS, result)
 }
 
-func CheckUser(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "로그인 & 유저 유효성 체크",
-	})
-}
-
 // 회원가입
 // 성공: row integer, 실패: 0
 func RegisterUser(c *gin.Context) {
@@ -100,12 +93,9 @@ func RegisterUser(c *gin.Context) {
 
 		return
 	}
-
 	newUser := new(entities.User)
-
 	newUser.UserNickname = user.NickName
 	newUser.CompanyNo = user.Company
-	//	newUser.CreateDtm = (*time.Time)(time.Now().UTC().Location())
 
 	result, err := repositories.CreateUser(*newUser)
 
@@ -140,7 +130,6 @@ func GetUser(c *gin.Context) {
 	user, err := repositories.GetUser(id)
 
 	if err != nil {
-
 		appGin.Response(http.StatusBadRequest, message.ERROR, user)
 		log.Print(err.Error())
 		return
@@ -165,9 +154,24 @@ func GetUser(c *gin.Context) {
 
 // 회원 정보 삭제
 func DeleteUser(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "회원 삭제",
-	})
+	appGin := app.Gin{C: c}
+	user := new(model.User)
+
+	if err := c.ShouldBindJSON(&user); err != nil {
+		appGin.Response(http.StatusBadRequest, message.ERROR, user)
+		return
+	}
+
+	dbUser := new(entities.User)
+
+	dbUser.UserNo = user.UserNo
+	dbUser.IsUsed = 0
+
+	repositories.UpdateUser(*dbUser)
+
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"message": "회원 삭제",
+	// })
 }
 
 // 회원 정보 수정
@@ -200,11 +204,7 @@ func UpdateUser(c *gin.Context) {
 
 	userEntity := new(entities.User)
 	userEntity.UserNickname = user.NickName
-
-	//복호화 추가 필요
-	// 다시 인코딩
-	encodePassword := util.EncodeBase64(user.Password)
-	userEntity.UserPassword = encodePassword
+	userEntity.UserPassword = user.Password
 	userEntity.UpdateDtm = time.Now()
 	userEntity.CompanyNo = user.Company
 
