@@ -196,7 +196,6 @@ func UpdateUser(c *gin.Context) {
 }
 
 func DoLogin(c *gin.Context) {
-
 	gin := app.Gin{C: c}
 
 	user := new(model.User)
@@ -213,12 +212,14 @@ func DoLogin(c *gin.Context) {
 	result, err := repositories.ExistsPassword(user.Email, user.Password)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    403,
-			"message": "로그인 오류",
-		})
 
-		log.Print(err.Error())
+		gin.Response(http.StatusBadRequest, message.LOGIN_FAIL, result)
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"code":    403,
+		// 	"message": "로그인 오류",
+		// })
+
+		// log.Print(err.Error())
 
 		return
 	}
