@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// 추가 예정
 func SendEmail(c *gin.Context) {
 	param := c.Param("param")
 
@@ -23,6 +24,7 @@ func SendEmail(c *gin.Context) {
 	})
 }
 
+// 코드정보 유무 체크
 func CheckCode(c *gin.Context) {
 	gin := app.Gin{C: c}
 	code := c.Query("code")
@@ -36,7 +38,8 @@ func CheckCode(c *gin.Context) {
 	gin.Response(http.StatusOK, message.SUCCESS, code)
 }
 
-func CheckNickName(c *gin.Context) {
+// 닉네임 존재 유무 체크
+func ExistsNickName(c *gin.Context) {
 	gin := app.Gin{C: c}
 
 	nickName := c.Query("nickName")
@@ -52,7 +55,9 @@ func CheckNickName(c *gin.Context) {
 	gin.Response(http.StatusOK, message.SUCCESS, result)
 }
 
-func CheckEmail(c *gin.Context) {
+// 회원 이메일 존재 유무 체크
+// 성공시: row 반환, 실패: 0
+func ExistsEmail(c *gin.Context) {
 
 	gin := app.Gin{C: c}
 
@@ -61,6 +66,7 @@ func CheckEmail(c *gin.Context) {
 
 	if err != nil {
 		gin.Response(http.StatusBadRequest, message.INVALID_PARAMS, result)
+		log.Print(err.Error())
 		return
 	}
 
@@ -73,6 +79,8 @@ func CheckUser(c *gin.Context) {
 	})
 }
 
+// 회원가입
+// 성공: row integer, 실패: 0
 func RegisterUser(c *gin.Context) {
 
 	appGin := app.Gin{C: c}
@@ -97,7 +105,7 @@ func RegisterUser(c *gin.Context) {
 
 	newUser.UserNickname = user.NickName
 	newUser.CompanyNo = user.Company
-	newUser.CreateDtm = (*time.Time)(time.Now().UTC().Location())
+	//	newUser.CreateDtm = (*time.Time)(time.Now().UTC().Location())
 
 	result, err := repositories.CreateUser(*newUser)
 
@@ -115,6 +123,7 @@ func RegisterUser(c *gin.Context) {
 	}
 
 	appGin.Response(http.StatusOK, message.SUCCESS, result)
+	log.Print("회원가입 성공")
 
 	// c.JSON(http.StatusOK, gin.H{
 	// 	"Content-type": "application/json",
@@ -133,6 +142,8 @@ func GetUser(c *gin.Context) {
 	if err != nil {
 
 		appGin.Response(http.StatusBadRequest, message.ERROR, user)
+		log.Print(err.Error())
+		return
 		// c.JSON(http.StatusBadRequest, gin.H{
 		// 	"code":    403,
 		// 	"message": "유저정보 조회 오류",
@@ -144,6 +155,7 @@ func GetUser(c *gin.Context) {
 	}
 
 	appGin.Response(http.StatusOK, message.SUCCESS, user)
+	log.Print("유저정보 조회 성공")
 
 	// c.JSON(http.StatusOK, gin.H{
 	// 	"message": "유저정보 조회",
@@ -151,12 +163,14 @@ func GetUser(c *gin.Context) {
 	// })
 }
 
+// 회원 정보 삭제
 func DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "회원 삭제",
 	})
 }
 
+// 회원 정보 수정
 func UpdateUser(c *gin.Context) {
 
 	gin := app.Gin{C: c}
@@ -206,6 +220,7 @@ func UpdateUser(c *gin.Context) {
 	log.Print("비밀번호 및 닉네임 변경 성공")
 }
 
+// 회원정보 로그인
 func DoLogin(c *gin.Context) {
 	gin := app.Gin{C: c}
 

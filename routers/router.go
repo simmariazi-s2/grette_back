@@ -43,10 +43,10 @@ func InitRouter() *gin.Engine {
 		userUrl.GET("/checkCode", service.CheckCode)
 
 		// 닉네임 체크(중복 검사, 욕설)
-		userUrl.GET("/checkNickName", service.CheckNickName)
+		userUrl.GET("/checkNickName", service.ExistsNickName)
 
 		// 이메일 체크(중복 검사)
-		userUrl.GET("/checkEmail", service.CheckEmail)
+		userUrl.GET("/checkEmail", service.ExistsEmail)
 
 		// 회원가입
 		userUrl.POST("/register", service.RegisterUser)
@@ -62,7 +62,6 @@ func InitRouter() *gin.Engine {
 
 		// 로그인
 		userUrl.POST("/login", service.DoLogin)
-
 	}
 
 	return router
