@@ -24,7 +24,7 @@ func GetUser(email string) (entities.User, error) {
 }
 
 /*
-	비밀번호 체크 ::  로그인
+	비밀번호 체크 & 로그인
 	bool : true 로그인 성공, false 로그인 실패
 */
 func ExistsPassword(email string, password string) (bool, error) {
@@ -45,7 +45,7 @@ func ExistsPassword(email string, password string) (bool, error) {
 }
 
 /*
-	닉네임 존재 유무 체크
+	닉네임 존재 유무 체크 (중복체크)
 	int : 0 없음, 1 있음
 */
 func ExistsNickName(nickName string) (int, error) {
@@ -101,7 +101,7 @@ func UpdateUser(user entities.User) (int, error) {
 		return 0, errors.New("회원정보 수정 오류 : User 정보가 비어있습니다. ")
 	}
 
-	result := database.Db.Updates(&user)
+	result := database.Db.Model(&user).Updates(&user)
 
 	return int(result.RowsAffected), result.Error
 

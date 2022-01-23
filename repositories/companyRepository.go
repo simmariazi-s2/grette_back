@@ -21,7 +21,7 @@ func GetCompanyList() ([]entities.Company, error) {
 
 // 회사 등록
 func CreateCompany(company entities.Company) (int, error) {
-	result := database.Db.Create(&company)
+	result := database.Db.Model(&company).Create(&company)
 
 	return int(result.RowsAffected), result.Error
 }

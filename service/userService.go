@@ -94,8 +94,8 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 	newUser := new(entities.User)
-	newUser.UserNickname = user.NickName
-	newUser.CompanyNo = user.Company
+	newUser.UserNickname = &user.NickName
+	newUser.CompanyNo = &user.Company
 
 	result, err := repositories.CreateUser(*newUser)
 
@@ -203,10 +203,10 @@ func UpdateUser(c *gin.Context) {
 	// gin.Response(http.StatusOK, message.SUCCESS, result)
 
 	userEntity := new(entities.User)
-	userEntity.UserNickname = user.NickName
-	userEntity.UserPassword = user.Password
+	userEntity.UserNickname = &user.NickName
+	userEntity.UserPassword = &user.Password
 	userEntity.UpdateDtm = time.Now()
-	userEntity.CompanyNo = user.Company
+	userEntity.CompanyNo = &user.Company
 
 	result, err := repositories.UpdateUser(*userEntity)
 

@@ -47,6 +47,10 @@ func GetLikeRecommandList(likeType int) ([]entities.Recommand, error) {
 	return recommandList, result.Error
 }
 
+/*
+	게시글 작성
+	int 성공여부, error 에러
+*/
 func CreateBoard(board entities.Board) (int, error) {
 
 	if &board == nil {
@@ -59,17 +63,25 @@ func CreateBoard(board entities.Board) (int, error) {
 
 }
 
+/*
+	게시글 수정
+	int 성공여부, error 에러
+*/
 func UpdateBoard(board entities.Board) (int, error) {
 
 	if &board == nil {
 		return 0, errors.New("게시글 수정 오류 :: Board 정보가 비어있습니다.")
 	}
 
-	result := database.Db.Updates(&board)
+	result := database.Db.Model(&board).Updates(&board)
 
 	return int(result.RowsAffected), result.Error
 }
 
+/*
+	댓글 작성
+	int 성공여부, error 에러
+*/
 func CreateReply(reply entities.Reply) (int, error) {
 
 	if &reply == nil {
@@ -81,13 +93,17 @@ func CreateReply(reply entities.Reply) (int, error) {
 	return int(result.RowsAffected), result.Error
 }
 
+/*
+	댓글 수정
+	int 성공여부, error 에러
+*/
 func UpdateReply(reply entities.Reply) (int, error) {
 
 	if &reply == nil {
 		return 0, errors.New("댓글 수정 오류 :: Reply 정보가 비어있습니다.")
 	}
 
-	result := database.Db.Updates(&reply)
+	result := database.Db.Model(&reply).Updates(&reply)
 
 	return int(result.RowsAffected), result.Error
 }

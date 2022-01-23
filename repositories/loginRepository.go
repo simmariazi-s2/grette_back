@@ -69,8 +69,10 @@ func DbTest() string {
 	fmt.Println("! 4", a)
 
 	//iUser.UserNo =
-	iUser.CompanyNo = 11
-	iUser.UserId = "테스트3"
+	cNo := 11
+	uId := "테스트3"
+	iUser.CompanyNo = &cNo
+	iUser.UserId = &uId
 	iUser.UpdateDtm = time.Now()
 
 	//database.Db.Clauses(clause.OnConflict{
