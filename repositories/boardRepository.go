@@ -38,6 +38,8 @@ func GetReplyList() ([]entities.Reply, error) {
 	좋아요 한 리스트 가져오기
 	likeType 0 : 싫어요 , 1 : 좋아요
 	Recommand : 좋아요 리스트
+
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 게시글 목록이랑 조인하는 걸로 수정필요
 */
 func GetLikeRecommandList(likeType int) ([]entities.Recommand, error) {
 	var recommandList []entities.Recommand
