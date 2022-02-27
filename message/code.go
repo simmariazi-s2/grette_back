@@ -8,4 +8,5 @@ const (
 	SELECT_FAIL    = 204 // 조회 실패
 	INVALID_PARAMS = 400 // 파라미터 오류
 	ERROR          = 403 // 오류
+	SAVE_ERROR     = 404 // DB 저장 오류
 )

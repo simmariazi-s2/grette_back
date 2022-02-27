@@ -62,7 +62,6 @@ func CreateBoard(board entities.Board) (int, error) {
 	result := database.Db.Create(&board)
 
 	return int(result.RowsAffected), result.Error
-
 }
 
 /*
